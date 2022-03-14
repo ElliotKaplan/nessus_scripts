@@ -27,5 +27,5 @@ def nessus_script_arg_parse(description='default description'):
     parser.add_argument('ApiKey', type=str, help="nessus api key")
     parser.add_argument('SecretKey', type=str, help="nessus secret key")
 
-    return parser.parse_args()
+    return parser
     
