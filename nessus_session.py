@@ -1,4 +1,5 @@
 import json
+from itertools import chain
 from argparse import ArgumentParser
 
 import requests
@@ -16,8 +17,20 @@ class NessusSession(requests.Session):
         self.verify = False
     
     def request(self, method, url, **kwargs):
+        # requests only ever go to the nessus server, so bake that in
         url = self.domain + url
         return requests.Session.request(self, method, url, **kwargs)
+
+    def plugin_hosts(self, scan_number, plugin_id):
+        # get all the individual hosts associated with a given plugin
+        resp = self.get('/scans/{}/plugins/{}'.format(scan_number, plugin_id))
+        dat = resp.json()
+        # use a set comprehension to eliminate repeats
+        return {
+            *chain(*((h['hostname'] for h in p)
+                     for p in dat['outputs'][0]['ports'].values()))
+        }
+            
 
 
 def nessus_script_arg_parse(description='default description'):
@@ -29,3 +42,4 @@ def nessus_script_arg_parse(description='default description'):
 
     return parser
     
+
