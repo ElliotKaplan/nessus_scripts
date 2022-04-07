@@ -1,2 +1,6 @@
 *~
 \#*\#
+__pycache__
+# don't want to accidentally commit these
+accessKey 
+secretKey
