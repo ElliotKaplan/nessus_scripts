@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from nessus_session import NessusSession, nessus_script_arg_parse
 
 def get_synscan(sess, scan_number):
@@ -19,7 +20,7 @@ def get_synscan(sess, scan_number):
     return out
 
 if __name__=='__main__':
-    clargs = nessus_script_arg_parse('convert a syn scan to a file compatable with Eyewitness')
+    parser = nessus_script_arg_parse('convert a syn scan to a file compatable with Eyewitness')
     clargs = parser.parse_args()
     
     sess = NessusSession(clargs.NessusHost, clargs.ApiKey, clargs.SecretKey)

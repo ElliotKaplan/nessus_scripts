@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from itertools import chain
 
 from nessus_session import NessusSession, nessus_script_arg_parse
