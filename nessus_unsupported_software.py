@@ -3,8 +3,8 @@ from itertools import chain
 
 from nessus_session import NessusSession, nessus_script_arg_parse
 
-def get_unsupported(sess, scan_number):
-    resp = sess.get('/scans/{}'.format(scan_number))
+def get_unsupported(sess):
+    resp = sess.get('')
     dat = resp.json()
     # find results labeled 'unsupported'
     unsup = {
@@ -12,7 +12,7 @@ def get_unsupported(sess, scan_number):
         for d in dat['vulnerabilities']
         if 'unsupported' in d['plugin_name'].lower()
     }
-    return {k: sess.plugin_hosts(scan_number, v) for k, v in unsup.items()}
+    return {k: sess.plugin_hosts(v) for k, v in unsup.items()}
 
         
 if __name__=='__main__':
@@ -20,8 +20,8 @@ if __name__=='__main__':
     parser.add_argument('-nc', '--num_col', type=int, default=3, help='number of columns for output')
     clargs = parser.parse_args()
 
-    sess = NessusSession(clargs.NessusHost, clargs.ApiKey, clargs.SecretKey)
-    scan = get_unsupported(sess, clargs.scan_no)
+    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey)
+    scan = get_unsupported(sess)
     for key, hosts in scan.items():
         print(key)
         width = max(map(len, hosts)) + 5

@@ -8,22 +8,22 @@ filterwarnings('ignore')
 
 
 class NessusSession(requests.Session):
-    def __init__(self, host, accessKey, secretKey, port=8834):
+    def __init__(self, host, scan_number, accessKey, secretKey, port=8834):
         requests.Session.__init__(self)
         self.headers['X-ApiKeys'] = 'accessKey={}; secretKey={}'.format(
             accessKey, secretKey
         )
-        self.domain = 'https://{}:{}'.format(host, port)
+        self.root = 'https://{}:{}/scans/{}'.format(host, port, scan_number)
         self.verify = False
     
     def request(self, method, url, **kwargs):
         # requests only ever go to the nessus server, so bake that in
-        url = self.domain + url
+        url = self.root+url
         return requests.Session.request(self, method, url, **kwargs)
 
-    def plugin_hosts(self, scan_number, plugin_id):
+    def plugin_hosts(self, plugin_id):
         # get all the individual hosts associated with a given plugin
-        resp = self.get('/scans/{}/plugins/{}'.format(scan_number, plugin_id))
+        resp = self.get('/plugins/{}'.format(plugin_id))
         dat = resp.json()
         # use a set comprehension to eliminate repeats
         return {
