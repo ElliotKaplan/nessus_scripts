@@ -12,15 +12,8 @@ def get_unsupported(sess, scan_number):
         for d in dat['vulnerabilities']
         if 'unsupported' in d['plugin_name'].lower()
     }
-    out = dict()
-    for key, ind in unsup.items():
-        resp = sess.get('/scans/{}/plugins/{}'.format(scan_number, ind))
-        dat = resp.json()
-        hosts = set()
-        for port in dat['outputs'][0]['ports'].values():
-            hosts = hosts.union({h['hostname'] for h in port})
-        out[key] = hosts
-    return out
+    return {k: sess.plugin_hosts(scan_number, v) for k, v in unsup.items()}
+
         
 if __name__=='__main__':
     parser = nessus_script_arg_parse('Find outdated operating systems/software in a given nessus scan')
@@ -36,8 +29,9 @@ if __name__=='__main__':
         hosts = sorted(hosts, key=lambda h: list(map(int, h.split('.'))))
         nrow = len(hosts)//clargs.num_col + 1
         cols = [hosts[i*nrow:(i+1)*nrow] for i in range(clargs.num_col)]
-        while len(cols[-1]) != len(cols[0]):
-            cols[-1].append('')
+        for col in cols[1:]:
+            while len(col) != len(cols[0]):
+                col.append('')
         print('\n'.join(fmtstr.format(*r) for r in zip(*cols)))
         
         print('='*32)
