@@ -40,7 +40,7 @@ if __name__=='__main__':
     parser.add_argument('--include_ssl', action='store_true', help='set to include weak TLS/SSL findings')
     clargs = parser.parse_args()
 
-    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey)
+    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
     scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl)
     for key, hosts in scan.items():
         print(key)

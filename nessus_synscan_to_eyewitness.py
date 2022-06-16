@@ -48,7 +48,7 @@ if __name__=='__main__':
     parser = nessus_script_arg_parse('convert a syn scan to a file compatable with Eyewitness')
     clargs = parser.parse_args()
     
-    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey)
+    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
     scan = get_synscan(sess)
     print('\n'.join(scan))
     
