@@ -6,17 +6,21 @@ import requests
 from warnings import filterwarnings
 filterwarnings('ignore')
 
-
 class NessusSession(requests.Session):
-    def __init__(self, host, scan_number, accessKey, secretKey, port=8834, history_id=None):
+    def __init__(self, host, accessKey, secretKey, port=8834):
         requests.Session.__init__(self)
+        self.verify = False
         self.headers['X-ApiKeys'] = 'accessKey={}; secretKey={}'.format(
             accessKey, secretKey
         )
-        self.root = 'https://{}:{}/scans/{}'.format(host, port, scan_number)
+        self.root = 'https://{}:{}/'.format(host, port)
+
+class NessusScanSession(NessusSession):
+    def __init__(self, scan_number, *args, history_id=None, **kwargs):
+        NessusSession.__init__(self, *args, **kwargs)
+        self.root += 'scans/{}'.format(scan_number)
         self.base_query = {'history_id': history_id}
-        self.verify = False
-    
+
     def request(self, method, url, **kwargs):
         # requests only ever go to the nessus server, so bake that in
         url = self.root+url
@@ -48,9 +52,10 @@ def nessus_script_arg_parse(description='default description'):
     parser.add_argument('NessusHost', type=str, help="address of nessus service")
     parser.add_argument('ApiKey', type=str, help="nessus api key")
     parser.add_argument('SecretKey', type=str, help="nessus secret key")
+    return parser
+
+def nessus_scan_script_arg_parse(description='default description'):
+    parser = nessus_script_arg_parse(description)
     parser.add_argument('scan_no', type=int, help="number of scan to analyze")
     parser.add_argument('-hid', '--history_id', default=None, type=int, help="history id of scan")
-
     return parser
-    
-

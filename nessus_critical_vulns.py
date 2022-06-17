@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from itertools import chain
 
-from nessus_session import NessusSession, nessus_script_arg_parse
+from nessus_session import NessusScanSession, nessus_scan_script_arg_parse
 
 def get_high_risk(
         sess,
@@ -33,14 +33,14 @@ def get_high_risk(
 
 
 if __name__=='__main__':
-    parser = nessus_script_arg_parse('Find critical vulnerabilities in a given nessus scan')
+    parser = nessus_scan_script_arg_parse('Find critical vulnerabilities in a given nessus scan')
     parser.add_argument('-s', '--severity', type=int, default=4, help='severity to find. 4: Critical, 3: High....')
     parser.add_argument('-nc', '--num_col', type=int, default=3, help='number of columns for output')
     parser.add_argument('--include_unsupported', action='store_true', help='set to include unsupported findings')
     parser.add_argument('--include_ssl', action='store_true', help='set to include weak TLS/SSL findings')
     clargs = parser.parse_args()
 
-    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
+    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
     scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl)
     for key, hosts in scan.items():
         print(key)
