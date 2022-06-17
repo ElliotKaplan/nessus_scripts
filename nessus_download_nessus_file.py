@@ -5,15 +5,15 @@ import time
 
 import requests
 
-from nessus_session import NessusSession, nessus_script_arg_parse
+from nessus_session import NessusScanSession, nessus_scan_script_arg_parse
 
 
 if __name__=='__main__':
-    parser = nessus_script_arg_parse('Download a specific nessus scan')
+    parser = nessus_scan_script_arg_parse('Download a specific nessus scan')
     parser.add_argument('fileName', type=str, help="Name of download file")
     
     clargs = parser.parse_args()
-    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
+    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
 
     resp = sess.post('/export', json={'format': clargs.fileName.split('.')[-1]})
     tokens = resp.json()['token']
