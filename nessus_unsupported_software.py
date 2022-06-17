@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from itertools import chain
 
-from nessus_session import NessusSession, nessus_script_arg_parse
+from nessus_session import NessusScanSession, nessus_scan_script_arg_parse
 
 def get_unsupported(sess):
     resp = sess.get('')
@@ -16,11 +16,11 @@ def get_unsupported(sess):
 
         
 if __name__=='__main__':
-    parser = nessus_script_arg_parse('Find outdated operating systems/software in a given nessus scan')
+    parser = nessus_scan_script_arg_parse('Find outdated operating systems/software in a given nessus scan')
     parser.add_argument('-nc', '--num_col', type=int, default=3, help='number of columns for output')
     clargs = parser.parse_args()
 
-    sess = NessusSession(clargs.NessusHost, clargs.scan_no, clargs.ApiKey, clargs.SecretKey)
+    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey)
     scan = get_unsupported(sess)
     for key, hosts in scan.items():
         print(key)
