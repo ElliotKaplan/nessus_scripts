@@ -15,6 +15,10 @@ class NessusSession(requests.Session):
         )
         self.root = 'https://{}:{}/'.format(host, port)
 
+    def request(self, method, url, **kwargs):
+        url = self.root + url
+        return requests.Session.request(self, method, url, **kwargs)
+
 class NessusScanSession(NessusSession):
     def __init__(self, scan_number, *args, history_id=None, **kwargs):
         NessusSession.__init__(self, *args, **kwargs)
