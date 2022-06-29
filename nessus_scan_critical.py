@@ -7,8 +7,19 @@ def get_high_risk(
         sess,
         severity,
         include_unsupported=False,
-        include_ssl=False):
-    resp = sess.get('')
+        include_ssl=False,
+        only_public=False):
+    params = {}
+    if only_public:
+        params = {
+            'filter.0.quality': 'eq',
+            'filter.0.filter': 'exploit_available',
+            'filter.0.value': 'true',
+            'filter.search_type': 'and',
+            'includeHostDetailsForHostDiscovery': 'true'
+        }
+
+    resp = sess.get('', params=params)
     dat = resp.json()
     # get the plugins reporting the desired severity level
     plugins = {
@@ -38,10 +49,11 @@ if __name__=='__main__':
     parser.add_argument('-nc', '--num_col', type=int, default=3, help='number of columns for output')
     parser.add_argument('--include_unsupported', action='store_true', help='set to include unsupported findings')
     parser.add_argument('--include_ssl', action='store_true', help='set to include weak TLS/SSL findings')
+    parser.add_argument('--only_public', action='store_true', help='set to only include findings with public exploits')
     clargs = parser.parse_args()
 
     sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
-    scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl)
+    scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl, clargs.only_public)
     for key, hosts in scan.items():
         print(key)
         width = max(map(len, hosts)) + 5

@@ -25,15 +25,19 @@ class NessusScanSession(NessusSession):
         self.root += 'scans/{}'.format(scan_number)
         self.base_query = {'history_id': history_id}
 
+    # def request(self, method, url, **kwargs):
+    #     # requests only ever go to the nessus server, so bake that in
+    #     url = self.root+url
+    #     params = kwargs.get('params')
+    #     if params is not None:
+    #         params.update(**self.base_query)
+    #     else:
+    #         params = self.base_query
+    #     return requests.Session.request(self, method, url, params=params, **kwargs)
     def request(self, method, url, **kwargs):
         # requests only ever go to the nessus server, so bake that in
         url = self.root+url
-        params = kwargs.get('params')
-        if params is not None:
-            params.update(**self.base_query)
-        else:
-            params = self.base_query
-        return requests.Session.request(self, method, url, params=params, **kwargs)
+        return requests.Session.request(self, method, url, **kwargs)
 
     def plugin_hosts(self, plugin_id):
         # get all the individual hosts associated with a given plugin
