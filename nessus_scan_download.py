@@ -13,7 +13,7 @@ if __name__=='__main__':
     parser.add_argument('fileName', type=str, help="Name of download file")
     
     clargs = parser.parse_args()
-    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
+    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.AccessKey, clargs.SecretKey, history_id=clargs.history_id)
 
     resp = sess.post('/export', json={'format': clargs.fileName.split('.')[-1]})
     tokens = resp.json()['token']

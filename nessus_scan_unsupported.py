@@ -20,7 +20,7 @@ if __name__=='__main__':
     parser.add_argument('-nc', '--num_col', type=int, default=3, help='number of columns for output')
     clargs = parser.parse_args()
 
-    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey)
+    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.AccessKey, clargs.SecretKey)
     scan = get_unsupported(sess)
     for key, hosts in scan.items():
         print(key)

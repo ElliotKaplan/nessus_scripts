@@ -1,4 +1,5 @@
 import json
+from os import environ
 from itertools import chain
 from argparse import ArgumentParser
 
@@ -57,9 +58,27 @@ class NessusScanSession(NessusSession):
 
 def nessus_script_arg_parse(description='default description'):
     parser = ArgumentParser(description)
-    parser.add_argument('NessusHost', type=str, help="address of nessus service")
-    parser.add_argument('ApiKey', type=str, help="nessus api key")
-    parser.add_argument('SecretKey', type=str, help="nessus secret key")
+    if environ.get('NESSUS_HOST') is not None:
+        parser.add_argument('--NessusHost', type=str,
+                            default=environ.get('NESSUS_HOST'),
+                            help="address of nessus service")
+    else:
+        parser.add_argument('NessusHost', type=str,
+                            help="address of nessus service")
+    if environ.get('ACCESS_KEY') is not None:
+        parser.add_argument('--AccessKey', type=str,
+                            default=environ.get('ACCESS_KEY'),
+                            help="nessus api key")
+    else:
+        parser.add_argument('AccessKey', type=str,
+                            help="nessus api key")
+    if environ.get('SECRET_KEY') is not None:
+        parser.add_argument('--SecretKey', type=str,
+                            default=environ.get('SECRET_KEY'),
+                            help="nessus secret key")
+    else:
+        parser.add_argument('SecretKey', type=str,
+                            help="nessus secret key")
     return parser
 
 def nessus_scan_script_arg_parse(description='default description'):

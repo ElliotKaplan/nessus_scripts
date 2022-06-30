@@ -14,7 +14,7 @@ if __name__=='__main__':
                         help='set to only return scan id numbers')
     
     clargs = parser.parse_args()
-    sess = NessusSession(clargs.NessusHost, clargs.ApiKey, clargs.SecretKey)
+    sess = NessusSession(clargs.NessusHost, clargs.AccessKey, clargs.SecretKey)
 
     resp = sess.get('scans', params={'folder_id': clargs.folder_id})
     dat = resp.json()

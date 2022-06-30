@@ -52,7 +52,7 @@ if __name__=='__main__':
     parser.add_argument('--only_public', action='store_true', help='set to only include findings with public exploits')
     clargs = parser.parse_args()
 
-    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.ApiKey, clargs.SecretKey, history_id=clargs.history_id)
+    sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.AccessKey, clargs.SecretKey, history_id=clargs.history_id)
     scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl, clargs.only_public)
     for key, hosts in scan.items():
         print(key)
