@@ -37,7 +37,7 @@ def get_high_risk(
         plugins = {
             k: v
             for k, v in plugins.items()
-            if 'ssl' not in k.lower()
+            if ('ssl' not in k.lower() and 'tls' not in k.lower())
         }
                    
     return {k: sess.plugin_hosts(v) for k, v in plugins.items()}
