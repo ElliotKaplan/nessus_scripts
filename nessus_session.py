@@ -43,17 +43,23 @@ class NessusScanSession(NessusSession):
     def plugin_hosts(self, plugin_id):
         # get all the individual hosts associated with a given plugin
         resp = self.get('/plugins/{}'.format(plugin_id))
-        dat = resp.json()
+        data = resp.json()
         # use a set comprehension to eliminate repeats
         return {
-            *chain(*((h['hostname'] for h in p)
-                     for p in dat['outputs'][0]['ports'].values()))
+            *chain(
+                (
+                    h['hostname'] 
+                    for d in data['outputs']
+                    for p in d['ports'].values()
+                    for h in p
+                )
+            )
         }
 
     def scan_name(self):
         resp = self.get('')
-        dat = resp.json()
-        return dat['info']['name']
+        data = resp.json()
+        return data['info']['name']
 
 
 def nessus_script_arg_parse(description='default description'):
