@@ -7,9 +7,11 @@ from nessus_session import NessusScanSession, nessus_scan_script_arg_parse
 def get_high_risk(
         sess,
         severity,
+        plugin_numbers=False,
         include_unsupported=False,
         include_ssl=False,
-        only_public=False):
+        only_public=False,
+        ):
     params = {}
     if only_public:
         params = {
@@ -40,6 +42,8 @@ def get_high_risk(
             for k, v in plugins.items()
             if ('ssl' not in k.lower() and 'tls' not in k.lower())
         }
+    if plugin_numbers:
+        return {f'{v}:{k}': sess.plugin_hosts(v) for k, v in plugins.items()}
                    
     return {k: sess.plugin_hosts(v) for k, v in plugins.items()}
 
@@ -48,6 +52,7 @@ if __name__=='__main__':
     parser = nessus_scan_script_arg_parse('Find critical vulnerabilities in a given nessus scan')
     parser.add_argument('-s', '--severity', type=int, default=4, help='severity to find. 4: Critical, 3: High....')
     parser.add_argument('-nc', '--num_col', type=int, default=3, help='number of columns for output')
+    parser.add_argument('--plugin_numbers', action='store_true', help='include plugin number in description')
     parser.add_argument('--include_unsupported', action='store_true', help='set to include unsupported findings')
     parser.add_argument('--include_ssl', action='store_true', help='set to include weak TLS/SSL findings')
     parser.add_argument('--only_public', action='store_true', help='set to only include findings with public exploits')
@@ -55,7 +60,7 @@ if __name__=='__main__':
     clargs = parser.parse_args()
 
     sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.AccessKey, clargs.SecretKey, history_id=clargs.history_id)
-    scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl, clargs.only_public)
+    scan = get_high_risk(sess, clargs.severity, clargs.plugin_numbers, clargs.include_unsupported, clargs.include_ssl, clargs.only_public,)
 
     # set up the regex to filter descriptions with
     key_reg = clargs.filter_description
