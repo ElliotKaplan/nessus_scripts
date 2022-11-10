@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 from itertools import chain
+import re
 
 from nessus_session import NessusScanSession, nessus_scan_script_arg_parse
 
@@ -50,11 +51,21 @@ if __name__=='__main__':
     parser.add_argument('--include_unsupported', action='store_true', help='set to include unsupported findings')
     parser.add_argument('--include_ssl', action='store_true', help='set to include weak TLS/SSL findings')
     parser.add_argument('--only_public', action='store_true', help='set to only include findings with public exploits')
+    parser.add_argument('--filter_description', nargs='?', help='regex to match for display')
     clargs = parser.parse_args()
 
     sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.AccessKey, clargs.SecretKey, history_id=clargs.history_id)
     scan = get_high_risk(sess, clargs.severity, clargs.include_unsupported, clargs.include_ssl, clargs.only_public)
+
+    # set up the regex to filter descriptions with
+    key_reg = clargs.filter_description
+    if key_reg is not None:
+        key_reg = re.compile(key_reg)
+
     for key, hosts in scan.items():
+        if key_reg is not None:
+            if key_reg.search(key) is None:
+                continue
         print(key)
         width = max(map(len, hosts)) + 5
         fmtstr = ('{:<' + str(width) + 's}')*clargs.num_col
