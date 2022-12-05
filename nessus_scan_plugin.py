@@ -54,12 +54,16 @@ if __name__=='__main__':
 
     sess = NessusScanSession(clargs.scan_no, clargs.NessusHost, clargs.AccessKey, clargs.SecretKey, history_id=clargs.history_id)
     if clargs.hosts:
-        print(
-            '\n'.join(
-                sorted(sess.plugin_hosts(clargs.plugin_id),
-                       key=lambda s: tuple(map(int, s.split('.'))))
+        try:
+            print(
+                '\n'.join(
+                    sorted(sess.plugin_hosts(clargs.plugin_id),
+                           key=lambda s: tuple(map(int, s.split('.'))))
+                )
             )
-        )
+        # if the plugin has no entries, exit out
+        except TypeError:
+            pass
         sys.exit()
     resp = sess.get('/plugins/{}'.format(clargs.plugin_id))
     data = resp.json()
