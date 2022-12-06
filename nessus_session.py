@@ -1,3 +1,4 @@
+
 import json
 from os import environ
 from itertools import chain
@@ -8,7 +9,13 @@ from warnings import filterwarnings
 filterwarnings('ignore')
 
 class NessusSession(requests.Session):
-    def __init__(self, host, accessKey, secretKey, port=8834):
+    def __init__(
+            self,
+            host=environ.get('NESSUS_HOST', 'localhost'),
+            accessKey=environ.get('ACCESS_KEY', ''),
+            secretKey=environ.get('SECRET_KEY', ''),
+            port=environ.get('NESSUS_PORT', 8834)
+    ):
         requests.Session.__init__(self)
         self.verify = False
         self.headers['X-ApiKeys'] = 'accessKey={}; secretKey={}'.format(
